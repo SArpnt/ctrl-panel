@@ -22,19 +22,33 @@
 // @icon64       https://github.com/SArpnt/btnAPI/raw/master/icon64.png
 
 (function () {
+	'use strict';
+
 	let btnAPI = {};
+	window.btnAPI = btnAPI;
+	cardboard && cardboard.register('btnAPI', btnAPI, false, GM_info);
 
 	let btnC = {
 		top: { location: 'beforebegin', size: 'md', },
 		left: { location: 'afterbegin', size: 'lg', },
 		right: { location: 'beforeend', size: 'lg', },
 		bottom: { location: 'afterend', size: 'md', },
-	};
-	let validSizes = ['xxxxxl', 'xxxxl', 'xxxl', 'xxl', 'xl', 'lg', 'md', 'sm', 'xs', 'xxs', 'xxxs', 'xxxxs','xxxxxs', ];
-	let validTypes = ['basic',
-		'primary', 'secondary', 'success', 'danger', 'warning', 'info', 'light', 'dark',
-		'outline-primary', 'outline-secondary', 'outline-success', 'outline-danger', 'outline-warning', 'outline-info', 'outline-light', 'outline-dark',
-	];
+	},
+		validSizes = ['xxxxxl', 'xxxxl', 'xxxl', 'xxl', 'xl', 'lg', 'md', 'sm', 'xs', 'xxs', 'xxxs', 'xxxxs', 'xxxxxs',],
+		validTypes = ['basic',
+			'primary', 'secondary', 'success', 'danger', 'warning', 'info', 'light', 'dark',
+			'outline-primary', 'outline-secondary', 'outline-success', 'outline-danger', 'outline-warning', 'outline-info', 'outline-light', 'outline-dark',
+		];
+
+
+	let functions = ['addButtonGroup', 'addButton', 'removeButtonGroup', 'removeButton'],
+		queue = [],
+		runQueue = _ => queue.forEach(f => f());
+	for (const f in functions)
+		btnAPI[f] = function () {
+			queue.push(_ => btnAPI[f](arguments));
+		};
+
 	window.addEventListener('load', function () {
 		{
 			let sizeStyles = document.createElement('style');
@@ -92,9 +106,9 @@
 			document.head.appendChild(sizeStyles);
 		}
 
-		menubar = document.getElementById('chat').parentElement.parentElement;
-		sendBtn = document.querySelector('#chat button');
-		chatbar = document.querySelector('#chat form').children[0];
+		let menubar = document.getElementById('chat').parentElement.parentElement,
+			sendBtn = document.querySelector('#chat button'),
+			chatbar = document.querySelector('#chat form').children[0];
 
 		menubar.classList.add('align-items-center');
 
@@ -125,10 +139,6 @@
 			btnGroup.className = 'btn-group';
 			btnGroup.style.marginLeft = '1ch';
 			btnGroup.dataset.type = 'btnGroup';
-			btnC[loc].elem.appendChild(btnGroup);
-
-			if (!document.contains(btnC[loc].elem))
-				chatbar.insertAdjacentElement(btnC[loc].location, btnC[loc].elem);
 
 			for (let buttonData of buttons) {
 				let text, type, size;
@@ -146,12 +156,16 @@
 
 				btnGroup.appendChild(btn);
 			}
+
+			btnC[loc].elem.appendChild(btnGroup);
+			if (!document.contains(btnC[loc].elem))
+				chatbar.insertAdjacentElement(btnC[loc].location, btnC[loc].elem);
+
 			return btnGroup;
 		};
 
 		btnAPI.addButton = function (loc, text, type, size) {
-			if (validSizes.includes(size)) return btnAPI.addButtonGroup(loc, size, [text, type]);
-			else return btnAPI.addButtonGroup(loc, [text, type]);
+			return btnAPI.addButtonGroup(loc, size, [text, type]);
 		};
 
 		btnAPI.removeButtonGroup = function (group) {
@@ -179,7 +193,7 @@
 
 		sendBtn.remove();
 		btnAPI.addButtonGroup('right').appendChild(sendBtn);
-	});
 
-	window.btnAPI = btnAPI;
+		runQueue();
+	});
 })();
