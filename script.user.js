@@ -1,13 +1,13 @@
 // ==UserScript==
-// @name         btnAPI
-// @description  Modding api buttons
+// @name         Ctrl Panel
+// @description  button api
 // @author       SArpnt
 // @version      1.0.0
 // @namespace    https://boxcrittersmods.ga/authors/sarpnt/
-// @homepage     https://boxcrittersmods.ga/projects/btnAPI/
-// @updateURL    https://github.com/SArpnt/btnAPI/raw/master/script.user.js
-// @downloadURL  https://github.com/SArpnt/btnAPI/raw/master/script.user.js
-// @supportURL   https://github.com/SArpnt/btnAPI/issues
+// @homepage     https://boxcrittersmods.ga/projects/ctrl-panel/
+// @updateURL    https://github.com/SArpnt/ctrl-panel/raw/master/script.user.js
+// @downloadURL  https://github.com/SArpnt/ctrl-panel/raw/master/script.user.js
+// @supportURL   https://github.com/SArpnt/ctrl-panel/issues
 // @run-at       document-start
 // @grant        none
 // @match        https://boxcritters.com/play/
@@ -21,9 +21,9 @@
 (function () {
 	'use strict';
 
-	let btnAPI = {};
-	window.btnAPI = btnAPI;
-	cardboard && cardboard.register('btnAPI', btnAPI, false, GM_info);
+	let ctrlPanel = {};
+	window.ctrlPanel = ctrlPanel;
+	cardboard && cardboard.register('ctrlPanel', ctrlPanel, false, GM_info);
 
 	let btnC = {
 		top: { location: 'beforebegin', size: 'md', },
@@ -42,8 +42,8 @@
 		queue = [],
 		runQueue = _ => queue.forEach(f => f());
 	for (const f in functions)
-		btnAPI[f] = function () {
-			queue.push(_ => btnAPI[f](arguments));
+		ctrlPanel[f] = function () {
+			queue.push(_ => ctrlPanel[f](arguments));
 		};
 
 	window.addEventListener('load', function () {
@@ -126,7 +126,7 @@
 		btnC.right.elem.style.marginLeft = 'calc(-1ch + -1px)';
 		//btnC.left.elem.style.marginRight = '-1ch';
 
-		btnAPI.addButtonGroup = function (loc, gsize, ...buttons) {
+		ctrlPanel.addButtonGroup = function (loc, gsize, ...buttons) {
 			if (typeof gsize != 'undefined' && !validSizes.includes(gsize)) {
 				buttons.unshift(gsize);
 				gsize = btnC[loc].size;
@@ -161,25 +161,25 @@
 			return btnGroup;
 		};
 
-		btnAPI.addButton = function (loc, text, type, size) {
-			return btnAPI.addButtonGroup(loc, size, [text, type]).children[0];
+		ctrlPanel.addButton = function (loc, text, type, size) {
+			return ctrlPanel.addButtonGroup(loc, size, [text, type]).children[0];
 		};
 
-		btnAPI.removeButtonGroup = function (group) {
-			if (group.dataset.type != 'btnGroup') throw `btnAPI: button not in a button group!`;
+		ctrlPanel.removeButtonGroup = function (group) {
+			if (group.dataset.type != 'btnGroup') throw `Ctrl Panel: button not in a button group!`;
 			let container = group.parentElement;
-			if (container.dataset.type != 'btnContainer') throw `btnAPI: button group not in a container!`;
+			if (container.dataset.type != 'btnContainer') throw `Ctrl Panel: button group not in a container!`;
 			group.remove();
 			if (!container.childElementCount)
 				container.remove();
 		};
 
-		btnAPI.removeButton = function (btn) {
-			if (btn.dataset.type != 'btn') throw `btnAPI: not a button!`;
+		ctrlPanel.removeButton = function (btn) {
+			if (btn.dataset.type != 'btn') throw `Ctrl Panel: not a button!`;
 			let group = btn.parentElement;
-			if (group.dataset.type != 'btnGroup') throw `btnAPI: button not in a button group!`;
+			if (group.dataset.type != 'btnGroup') throw `Ctrl Panel: button not in a button group!`;
 			let container = group.parentElement;
-			if (container.dataset.type != 'btnContainer') throw `btnAPI: button group not in a container!`;
+			if (container.dataset.type != 'btnContainer') throw `Ctrl Panel: button group not in a container!`;
 			btn.remove();
 			if (!group.childElementCount) {
 				group.remove();
@@ -189,7 +189,7 @@
 		};
 
 		sendBtn.remove();
-		btnAPI.addButtonGroup('right').appendChild(sendBtn);
+		ctrlPanel.addButtonGroup('right').appendChild(sendBtn);
 
 		runQueue();
 	});
