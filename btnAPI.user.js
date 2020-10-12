@@ -8,7 +8,6 @@
 // @updateURL    https://github.com/SArpnt/btnAPI/raw/master/script.user.js
 // @downloadURL  https://github.com/SArpnt/btnAPI/raw/master/script.user.js
 // @supportURL   https://github.com/SArpnt/btnAPI/issues
-
 // @run-at       document-start
 // @grant        none
 // @match        https://boxcritters.com/play/
@@ -18,8 +17,6 @@
 // @match        https://boxcritters.com/play/index.html?*
 // @match        https://boxcritters.com/play/index.html#*
 // ==/UserScript==
-// @icon         https://github.com/SArpnt/btnAPI/raw/master/icon16.png
-// @icon64       https://github.com/SArpnt/btnAPI/raw/master/icon64.png
 
 (function () {
 	'use strict';
@@ -165,7 +162,7 @@
 		};
 
 		btnAPI.addButton = function (loc, text, type, size) {
-			return btnAPI.addButtonGroup(loc, size, [text, type]);
+			return btnAPI.addButtonGroup(loc, size, [text, type]).children[0];
 		};
 
 		btnAPI.removeButtonGroup = function (group) {
