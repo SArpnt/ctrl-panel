@@ -1,20 +1,20 @@
-btnAPI.addButton('left');
-btnAPI.addButton('top', 'xxxxxl', 'info', 'xxxxxl');
-btnAPI.addButton('top', 'xxxxl', 'info', 'xxxxl');
-btnAPI.addButton('top', 'xxxl', 'danger', 'xxxl');
-btnAPI.addButton('top', 'xxl', 'danger', 'xxl');
-btnAPI.addButton('top', 'xl', 'warning', 'xl');
-btnAPI.addButton('top', 'lg', 'secondary', 'lg');
-btnAPI.addButton('top', 'md', 'dark', 'md');
-btnAPI.addButton('top', 'sm', 'secondary', 'sm');
-btnAPI.addButton('top', 'xs', 'warning', 'xs');
-btnAPI.addButton('top', 'xxs', 'danger', 'xxs');
-btnAPI.addButton('top', 'xxxs', 'danger', 'xxxs');
-btnAPI.addButton('top', 'xxxxs', 'info', 'xxxxs');
-btnAPI.addButton('top', 'xxxxxs', 'info', 'xxxxxs');
-btnAPI.addButton('top');
-btnAPI.addButton('top', 'lllllllllllllllloooooooooooooooonnnnnnnnnnnnnnnngggggggggggggggg');
-btnAPI.addButtonGroup('bottom',
+ctrlPanel.addButton('left');
+ctrlPanel.addButton('top', 'xxxxxl', 'info', 'xxxxxl');
+ctrlPanel.addButton('top', 'xxxxl', 'info', 'xxxxl');
+ctrlPanel.addButton('top', 'xxxl', 'danger', 'xxxl');
+ctrlPanel.addButton('top', 'xxl', 'danger', 'xxl');
+ctrlPanel.addButton('top', 'xl', 'warning', 'xl');
+ctrlPanel.addButton('top', 'lg', 'secondary', 'lg');
+ctrlPanel.addButton('top', 'md', 'dark', 'md');
+ctrlPanel.addButton('top', 'sm', 'secondary', 'sm');
+ctrlPanel.addButton('top', 'xs', 'warning', 'xs');
+ctrlPanel.addButton('top', 'xxs', 'danger', 'xxs');
+ctrlPanel.addButton('top', 'xxxs', 'danger', 'xxxs');
+ctrlPanel.addButton('top', 'xxxxs', 'info', 'xxxxs');
+ctrlPanel.addButton('top', 'xxxxxs', 'info', 'xxxxxs');
+ctrlPanel.addButton('top');
+ctrlPanel.addButton('top', 'lllllllllllllllloooooooooooooooonnnnnnnnnnnnnnnngggggggggggggggg');
+ctrlPanel.addButtonGroup('bottom',
 	['xxxxxl', 'info', 'xxxxxl'],
 	['xxxxl', 'info', 'xxxxl'],
 	['xxxl', 'danger', 'xxxl'],

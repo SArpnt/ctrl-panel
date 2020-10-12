@@ -21,9 +21,22 @@
 (function () {
 	'use strict';
 
-	let ctrlPanel = {};
-	window.ctrlPanel = ctrlPanel;
-	cardboard && cardboard.register('ctrlPanel', ctrlPanel, false, GM_info);
+	const uWindow = typeof unsafeWindow != 'undefined' ? unsafeWindow : window;
+
+	const VERSION = [1, 0, 0];
+	if (uWindow.ctrlPanel)
+		if (uWindow.ctrlPanel.version < VERSION)
+			console.warn(`Ctrl Panel: A mod has an outdated version of Ctrl Panel!`);
+		else
+			return;
+
+	let ctrlPanel = { GM_info, version: VERSION };
+	uWindow.ctrlPanel = ctrlPanel;
+	if (cardboard)
+		if (cardboard.mods.ctrlPanel)
+			cardboard.mods.ctrlPanel = ctrlPanel;
+		else
+			cardboard.register('ctrlPanel', ctrlPanel, false, GM_info);
 
 	let btnC = {
 		top: { location: 'beforebegin', size: 'md', },
@@ -46,7 +59,7 @@
 			queue.push(_ => ctrlPanel[f](arguments));
 		};
 
-	window.addEventListener('load', function () {
+	function onPageLoad() {
 		{
 			let sizeStyles = document.createElement('style');
 			sizeStyles.innerHTML = `
@@ -127,8 +140,19 @@
 		//btnC.left.elem.style.marginRight = '-1ch';
 
 		ctrlPanel.addButtonGroup = function (loc, gsize, ...buttons) {
-			if (typeof gsize != 'undefined' && !validSizes.includes(gsize)) {
-				buttons.unshift(gsize);
+			if (!Object.keys(btnC).includes(loc)) {
+				if (isArray(gsize))
+					buttons.unshift(gsize);
+				else
+					throw `Invalid button '${gsize}' or invalid location '${loc}'`;
+				gsize = loc;
+				loc = 'bottom';
+			}
+			if (!validSizes.includes(gsize)) {
+				if (isArray(gsize))
+					buttons.unshift(gsize);
+				else
+					throw `Invalid button or size '${gsize}'`;
 				gsize = btnC[loc].size;
 			}
 
@@ -143,7 +167,12 @@
 					[text, type, size] = buttonData;
 				else
 					text = buttonData;
-				if (!validTypes.includes(type)) type = 'secondary';
+
+				if (!validTypes.includes(type)) {
+					type = 'secondary';
+					if (typeof size == 'undefined')
+						size = type;
+				}
 				if (!validSizes.includes(size)) size = gsize;
 
 				let btn = document.createElement('btn');
@@ -192,5 +221,9 @@
 		ctrlPanel.addButtonGroup('right').appendChild(sendBtn);
 
 		runQueue();
-	});
+	}
+	if (document.readyState == 'complete')
+		onPageLoad();
+	else
+		uWindow.addEventListener('load', onPageLoad);
 })();
