@@ -143,7 +143,7 @@
 			if (!Object.keys(btnC).includes(loc)) {
 				if (isArray(gsize))
 					buttons.unshift(gsize);
-				else
+				else if (typeof gsize != 'undefined')
 					throw `Invalid button '${gsize}' or invalid location '${loc}'`;
 				gsize = loc;
 				loc = 'bottom';
@@ -151,7 +151,7 @@
 			if (!validSizes.includes(gsize)) {
 				if (isArray(gsize))
 					buttons.unshift(gsize);
-				else
+				else if (typeof gsize != 'undefined')
 					throw `Invalid button or size '${gsize}'`;
 				gsize = btnC[loc].size;
 			}
