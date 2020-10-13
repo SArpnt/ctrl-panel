@@ -141,7 +141,7 @@
 
 		ctrlPanel.addButtonGroup = function (loc, gsize, ...buttons) {
 			if (!Object.keys(btnC).includes(loc)) {
-				if (isArray(gsize))
+				if (Array.isArray(gsize))
 					buttons.unshift(gsize);
 				else if (typeof gsize != 'undefined')
 					throw `Invalid button '${gsize}' or invalid location '${loc}'`;
@@ -149,7 +149,7 @@
 				loc = 'bottom';
 			}
 			if (!validSizes.includes(gsize)) {
-				if (isArray(gsize))
+				if (Array.isArray(gsize))
 					buttons.unshift(gsize);
 				else if (typeof gsize != 'undefined')
 					throw `Invalid button or size '${gsize}'`;
