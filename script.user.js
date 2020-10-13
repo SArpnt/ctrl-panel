@@ -2,7 +2,7 @@
 // @name         Ctrl Panel
 // @description  button api
 // @author       SArpnt
-// @version      1.0.2
+// @version      1.0.3
 // @namespace    https://boxcrittersmods.ga/authors/sarpnt/
 // @homepage     https://boxcrittersmods.ga/projects/ctrl-panel/
 // @updateURL    https://github.com/SArpnt/ctrl-panel/raw/master/script.user.js
@@ -23,7 +23,7 @@
 
 	const uWindow = typeof unsafeWindow != 'undefined' ? unsafeWindow : window;
 
-	const VERSION = [1, 0, 2];
+	const VERSION = [1, 0, 3];
 	if (uWindow.ctrlPanel)
 		if (uWindow.ctrlPanel.version < VERSION)
 			console.warn(`Ctrl Panel: A mod has an outdated version of Ctrl Panel!`);
@@ -141,18 +141,14 @@
 
 		ctrlPanel.addButtonGroup = function (loc, gsize, ...buttons) {
 			if (!Object.keys(btnC).includes(loc)) {
-				if (Array.isArray(gsize))
+				if (typeof gsize != 'undefined')
 					buttons.unshift(gsize);
-				else if (typeof gsize != 'undefined')
-					throw `Invalid button '${gsize}' or invalid location '${loc}'`;
 				gsize = loc;
 				loc = 'bottom';
 			}
 			if (!validSizes.includes(gsize)) {
-				if (Array.isArray(gsize))
+				if (typeof gsize != 'undefined')
 					buttons.unshift(gsize);
-				else if (typeof gsize != 'undefined')
-					throw `Invalid button or size '${gsize}'`;
 				gsize = btnC[loc].size;
 			}
 
@@ -190,8 +186,17 @@
 			return btnGroup;
 		};
 
-		ctrlPanel.addButton = function (loc, text, type, size) {
-			return ctrlPanel.addButtonGroup(loc, size, [text, type]).children[0];
+		ctrlPanel.addButton = function (text, type, loc, size) {
+			if (typeof text == 'undefined')
+				throw `Ctrl Panel: Invalid button '${text}'`;
+			if (typeof type != 'undefined' && !validTypes.includes(type)) {
+				size = loc;
+				loc = type;
+				type = undefined;
+			}
+			let b = [text];
+			type && b.push(type);
+			return ctrlPanel.addButtonGroup(loc, size, b).children[0];
 		};
 
 		ctrlPanel.removeButtonGroup = function (group) {

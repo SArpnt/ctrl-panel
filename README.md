@@ -12,7 +12,7 @@ ctrlPanel.version stores version of ctrlPanel
 
 functions:
 - ctrlPanel.addButtonGroup(location, size, ...[text, type, size]) *(if only setting text for a button, an array is unneeded)*
-- ctrlPanel.addButton(location, text, type, size)
+- ctrlPanel.addButton(text, type, location, size)
 - ctrlPanel.removeButtonGroup(group tag)
 - ctrlPanel.removeButton(button tag)
 location, type and size are always optional
