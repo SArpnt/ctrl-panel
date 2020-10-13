@@ -2,7 +2,7 @@
 // @name         Ctrl Panel
 // @description  button api
 // @author       SArpnt
-// @version      1.0.1
+// @version      1.0.2
 // @namespace    https://boxcrittersmods.ga/authors/sarpnt/
 // @homepage     https://boxcrittersmods.ga/projects/ctrl-panel/
 // @updateURL    https://github.com/SArpnt/ctrl-panel/raw/master/script.user.js
@@ -23,7 +23,7 @@
 
 	const uWindow = typeof unsafeWindow != 'undefined' ? unsafeWindow : window;
 
-	const VERSION = [1, 0, 1];
+	const VERSION = [1, 0, 2];
 	if (uWindow.ctrlPanel)
 		if (uWindow.ctrlPanel.version < VERSION)
 			console.warn(`Ctrl Panel: A mod has an outdated version of Ctrl Panel!`);
@@ -56,7 +56,7 @@
 		runQueue = _ => queue.forEach(f => f());
 	for (const f of functions)
 		ctrlPanel[f] = function () {
-			queue.push(_ => ctrlPanel[f](arguments));
+			queue.push(_ => ctrlPanel[f].apply(this, arguments));
 		};
 
 	function onPageLoad() {
