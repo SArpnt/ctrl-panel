@@ -2,7 +2,7 @@
 // @name         Ctrl Panel
 // @description  button api
 // @author       SArpnt
-// @version      1.0.4
+// @version      1.0.5
 // @namespace    https://boxcrittersmods.ga/authors/sarpnt/
 // @homepage     https://boxcrittersmods.ga/projects/ctrl-panel/
 // @updateURL    https://github.com/SArpnt/ctrl-panel/raw/master/script.user.js
@@ -23,7 +23,7 @@
 
 	const uWindow = typeof unsafeWindow != 'undefined' ? unsafeWindow : window;
 
-	const VERSION = [1, 0, 4];
+	const VERSION = [1, 0, 5];
 	if (uWindow.ctrlPanel)
 		if (uWindow.ctrlPanel.version < VERSION)
 			console.warn(`Ctrl Panel: A mod has an outdated version of Ctrl Panel!`);
@@ -31,8 +31,105 @@
 			return;
 
 	let ctrlPanel = { GM_info, version: VERSION };
-	uWindow.ctrlPanel = ctrlPanel;
 
+	let btnC = {
+		top: { location: 'beforebegin', size: 'md', elem: document.createElement('span'), },
+		left: { location: 'afterbegin', size: 'lg', elem: document.createElement('span'), },
+		right: { location: 'beforeend', size: 'lg', elem: document.createElement('span'), },
+		bottom: { location: 'afterend', size: 'md', elem: document.createElement('span'), },
+	},
+		validSizes = ['xxxxxl', 'xxxxl', 'xxxl', 'xxl', 'xl', 'lg', 'md', 'sm', 'xs', 'xxs', 'xxxs', 'xxxxs', 'xxxxxs',],
+		validTypes = ['basic',
+			'primary', 'secondary', 'success', 'danger', 'warning', 'info', 'light', 'dark',
+			'outline-primary', 'outline-secondary', 'outline-success', 'outline-danger', 'outline-warning', 'outline-info', 'outline-light', 'outline-dark',
+		];
+
+	let addBtnContainer = _ => 0;
+
+	ctrlPanel.addButtonGroup = function (loc, gsize, ...buttons) {
+		if (!Object.keys(btnC).includes(loc)) {
+			if (typeof gsize != 'undefined')
+				buttons.unshift(gsize);
+			gsize = loc;
+			loc = 'bottom';
+		}
+		if (!validSizes.includes(gsize)) {
+			if (typeof gsize != 'undefined')
+				buttons.unshift(gsize);
+			gsize = btnC[loc].size;
+		}
+
+		let btnGroup = document.createElement('div');
+		btnGroup.className = 'btn-group';
+		btnGroup.style.marginLeft = '1ch';
+		btnGroup.dataset.type = 'btnGroup';
+
+		for (let buttonData of buttons) {
+			let text, type, size;
+			if (Array.isArray(buttonData))
+				[text, type, size] = buttonData;
+			else
+				text = buttonData;
+
+			if (!validTypes.includes(type)) {
+				type = 'secondary';
+				if (typeof size == 'undefined')
+					size = type;
+			}
+			if (!validSizes.includes(size)) size = gsize;
+
+			let btn = document.createElement('btn');
+			btn.innerText = text;
+			btn.className = `btn btn-${type} btn-${size}`;
+			btn.dataset.type = 'btn';
+
+			btnGroup.append(btn);
+		}
+
+		btnC[loc].elem.append(btnGroup);
+		if (!document.contains(btnC[loc].elem))
+			addBtnContainer(loc);
+
+		return btnGroup;
+	};
+
+	ctrlPanel.addButton = function (text, type, loc, size) {
+		if (typeof text == 'undefined')
+			throw `Ctrl Panel: Invalid button '${text}'`;
+		if (typeof type != 'undefined' && !validTypes.includes(type)) {
+			size = loc;
+			loc = type;
+			type = undefined;
+		}
+		let b = [text];
+		type && b.push(type);
+		return ctrlPanel.addButtonGroup(loc, size, b).children[0];
+	};
+
+	ctrlPanel.removeButtonGroup = function (group) {
+		if (group.dataset.type != 'btnGroup') throw `Ctrl Panel: button not in a button group!`;
+		let container = group.parentElement;
+		if (container.dataset.type != 'btnContainer') throw `Ctrl Panel: button group not in a container!`;
+		group.remove();
+		if (!container.childElementCount)
+			container.remove();
+	};
+
+	ctrlPanel.removeButton = function (btn) {
+		if (btn.dataset.type != 'btn') throw `Ctrl Panel: not a button!`;
+		let group = btn.parentElement;
+		if (group.dataset.type != 'btnGroup') throw `Ctrl Panel: button not in a button group!`;
+		let container = group.parentElement;
+		if (container.dataset.type != 'btnContainer') throw `Ctrl Panel: button group not in a container!`;
+		btn.remove();
+		if (!group.childElementCount) {
+			group.remove();
+			if (!container.childElementCount)
+				container.remove();
+		}
+	};
+
+	uWindow.ctrlPanel = ctrlPanel;
 	const cRegister = _ => cardboard.register('ctrlPanel', ctrlPanel, false, GM_info);
 	if (cardboard)
 		if (cardboard.mods.ctrlPanel)
@@ -41,27 +138,6 @@
 			cRegister();
 	else
 		window.addEventListener('cardboardLoaded', cRegister);
-
-	let btnC = {
-		top: { location: 'beforebegin', size: 'md', },
-		left: { location: 'afterbegin', size: 'lg', },
-		right: { location: 'beforeend', size: 'lg', },
-		bottom: { location: 'afterend', size: 'md', },
-	},
-		validSizes = ['xxxxxl', 'xxxxl', 'xxxl', 'xxl', 'xl', 'lg', 'md', 'sm', 'xs', 'xxs', 'xxxs', 'xxxxs', 'xxxxxs',],
-		validTypes = ['basic',
-			'primary', 'secondary', 'success', 'danger', 'warning', 'info', 'light', 'dark',
-			'outline-primary', 'outline-secondary', 'outline-success', 'outline-danger', 'outline-warning', 'outline-info', 'outline-light', 'outline-dark',
-		];
-
-
-	let functions = ['addButtonGroup', 'addButton', 'removeButtonGroup', 'removeButton'],
-		queue = [],
-		runQueue = _ => queue.forEach(f => f());
-	for (const f of functions)
-		ctrlPanel[f] = function () {
-			queue.push(_ => ctrlPanel[f].apply(this, arguments));
-		};
 
 	function onPageLoad() {
 		{
@@ -117,7 +193,7 @@
 					font-size: 0.25rem;
 					border-radius: 0;
 				}`;
-			document.head.appendChild(sizeStyles);
+			document.head.append(sizeStyles);
 		}
 
 		let menubar = document.getElementById('chat').parentElement.parentElement,
@@ -126,7 +202,11 @@
 
 		menubar.classList.add('align-items-center');
 
-		btnC.right.elem = sendBtn.parentElement;
+		let oldElems = {};
+		for (let d in btnC)
+			oldElems[d] = btnC[d].elem;
+
+		btnC.right.elem = sendBtn.parentElement.cloneNode(false);
 		Array.from(btnC.right.elem.children).forEach(e => e.nodeType == 3 && e.remove());
 		btnC.right.elem.classList.add('btn-toolbar');
 		btnC.right.elem.style.marginLeft = '-1ch';
@@ -143,93 +223,18 @@
 		btnC.right.elem.style.marginLeft = 'calc(-1ch + -1px)';
 		//btnC.left.elem.style.marginRight = '-1ch';
 
-		ctrlPanel.addButtonGroup = function (loc, gsize, ...buttons) {
-			if (!Object.keys(btnC).includes(loc)) {
-				if (typeof gsize != 'undefined')
-					buttons.unshift(gsize);
-				gsize = loc;
-				loc = 'bottom';
-			}
-			if (!validSizes.includes(gsize)) {
-				if (typeof gsize != 'undefined')
-					buttons.unshift(gsize);
-				gsize = btnC[loc].size;
-			}
-
-			let btnGroup = document.createElement('div');
-			btnGroup.className = 'btn-group';
-			btnGroup.style.marginLeft = '1ch';
-			btnGroup.dataset.type = 'btnGroup';
-
-			for (let buttonData of buttons) {
-				let text, type, size;
-				if (Array.isArray(buttonData))
-					[text, type, size] = buttonData;
-				else
-					text = buttonData;
-
-				if (!validTypes.includes(type)) {
-					type = 'secondary';
-					if (typeof size == 'undefined')
-						size = type;
-				}
-				if (!validSizes.includes(size)) size = gsize;
-
-				let btn = document.createElement('btn');
-				btn.innerText = text;
-				btn.className = `btn btn-${type} btn-${size}`;
-				btn.dataset.type = 'btn';
-
-				btnGroup.appendChild(btn);
-			}
-
-			btnC[loc].elem.appendChild(btnGroup);
-			if (!document.contains(btnC[loc].elem))
-				chatbar.insertAdjacentElement(btnC[loc].location, btnC[loc].elem);
-
-			return btnGroup;
-		};
-
-		ctrlPanel.addButton = function (text, type, loc, size) {
-			if (typeof text == 'undefined')
-				throw `Ctrl Panel: Invalid button '${text}'`;
-			if (typeof type != 'undefined' && !validTypes.includes(type)) {
-				size = loc;
-				loc = type;
-				type = undefined;
-			}
-			let b = [text];
-			type && b.push(type);
-			return ctrlPanel.addButtonGroup(loc, size, b).children[0];
-		};
-
-		ctrlPanel.removeButtonGroup = function (group) {
-			if (group.dataset.type != 'btnGroup') throw `Ctrl Panel: button not in a button group!`;
-			let container = group.parentElement;
-			if (container.dataset.type != 'btnContainer') throw `Ctrl Panel: button group not in a container!`;
-			group.remove();
-			if (!container.childElementCount)
-				container.remove();
-		};
-
-		ctrlPanel.removeButton = function (btn) {
-			if (btn.dataset.type != 'btn') throw `Ctrl Panel: not a button!`;
-			let group = btn.parentElement;
-			if (group.dataset.type != 'btnGroup') throw `Ctrl Panel: button not in a button group!`;
-			let container = group.parentElement;
-			if (container.dataset.type != 'btnContainer') throw `Ctrl Panel: button group not in a container!`;
-			btn.remove();
-			if (!group.childElementCount) {
-				group.remove();
-				if (!container.childElementCount)
-					container.remove();
-			}
+		addBtnContainer = function (d) {
+			chatbar.insertAdjacentElement(btnC[d].location, btnC[d].elem);
 		};
 
 		sendBtn.remove();
-		ctrlPanel.addButtonGroup('right').appendChild(sendBtn);
+		ctrlPanel.addButtonGroup('right').append(sendBtn);
 
-		runQueue();
+		for (let d in btnC) {
+			btnC[d].elem.append(...oldElems[d].children);
+			if (btnC[d].elem.children.length)
+				addBtnContainer(d);
+		}
 	}
 	if (document.readyState == 'complete')
 		onPageLoad();
