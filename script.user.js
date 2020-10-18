@@ -2,7 +2,7 @@
 // @name         Ctrl Panel
 // @description  button api
 // @author       SArpnt
-// @version      1.0.3
+// @version      1.0.4
 // @namespace    https://boxcrittersmods.ga/authors/sarpnt/
 // @homepage     https://boxcrittersmods.ga/projects/ctrl-panel/
 // @updateURL    https://github.com/SArpnt/ctrl-panel/raw/master/script.user.js
@@ -23,7 +23,7 @@
 
 	const uWindow = typeof unsafeWindow != 'undefined' ? unsafeWindow : window;
 
-	const VERSION = [1, 0, 3];
+	const VERSION = [1, 0, 4];
 	if (uWindow.ctrlPanel)
 		if (uWindow.ctrlPanel.version < VERSION)
 			console.warn(`Ctrl Panel: A mod has an outdated version of Ctrl Panel!`);
@@ -32,11 +32,15 @@
 
 	let ctrlPanel = { GM_info, version: VERSION };
 	uWindow.ctrlPanel = ctrlPanel;
+
+	const cRegister = _ => cardboard.register('ctrlPanel', ctrlPanel, false, GM_info);
 	if (cardboard)
 		if (cardboard.mods.ctrlPanel)
 			cardboard.mods.ctrlPanel = ctrlPanel;
 		else
-			cardboard.register('ctrlPanel', ctrlPanel, false, GM_info);
+			cRegister();
+	else
+		window.addEventListener('cardboardLoaded', cRegister);
 
 	let btnC = {
 		top: { location: 'beforebegin', size: 'md', },
