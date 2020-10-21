@@ -2,7 +2,7 @@
 // @name         Ctrl Panel
 // @description  button api
 // @author       SArpnt
-// @version      1.0.6
+// @version      1.0.7
 // @namespace    https://boxcrittersmods.ga/authors/sarpnt/
 // @homepage     https://boxcrittersmods.ga/projects/ctrl-panel/
 // @updateURL    https://github.com/SArpnt/ctrl-panel/raw/master/script.user.js
@@ -131,7 +131,7 @@
 
 	uWindow.ctrlPanel = ctrlPanel;
 	const cRegister = _ => cardboard.register('ctrlPanel', ctrlPanel, false, GM_info);
-	if (cardboard)
+	if (uWindow.cardboard)
 		if (cardboard.mods.ctrlPanel)
 			cardboard.mods.ctrlPanel = ctrlPanel;
 		else
