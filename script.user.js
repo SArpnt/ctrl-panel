@@ -2,7 +2,7 @@
 // @name         Ctrl Panel
 // @description  button api
 // @author       SArpnt
-// @version      1.0.7
+// @version      1.0.8
 // @namespace    https://boxcrittersmods.ga/authors/sarpnt/
 // @homepage     https://boxcrittersmods.ga/projects/ctrl-panel/
 // @updateURL    https://github.com/SArpnt/ctrl-panel/raw/master/script.user.js
@@ -10,12 +10,7 @@
 // @supportURL   https://github.com/SArpnt/ctrl-panel/issues
 // @run-at       document-start
 // @grant        none
-// @match        https://boxcritters.com/play/
-// @match        https://boxcritters.com/play/?*
-// @match        https://boxcritters.com/play/#*
-// @match        https://boxcritters.com/play/index.html
-// @match        https://boxcritters.com/play/index.html?*
-// @match        https://boxcritters.com/play/index.html#*
+// @include      /^https:\/\/boxcritters\.com\/play\/(index\.html)?([\?#].*)?$/
 // ==/UserScript==
 
 (function () {
